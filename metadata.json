@@ -1,0 +1,6 @@
+{
+  "name": "CloudBounty - FinOps Multi-Cloud Dashboard",
+  "description": "Real-time multi-cloud cost tracking for AWS, Azure, and Google Cloud with gamified optimization bounties, engineer leaderboards, and milestone rewards.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
