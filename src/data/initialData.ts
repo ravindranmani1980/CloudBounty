@@ -19,7 +19,13 @@ export const INITIAL_ACCOUNTS: CloudAccount[] = [
     monthlySpend: 46250,
     dailyBurn: 1541,
     environment: 'Production',
-    status: 'active'
+    status: 'active',
+    connectionType: 'iam_role',
+    isLiveConnected: true,
+    lastSyncTimestamp: '2 mins ago',
+    syncStatus: 'live',
+    region: 'us-east-1',
+    credentialsMasked: 'arn:aws:iam::184930219941:role/ManiqSweepFinOpsRole'
   },
   {
     id: 'azure-core',
@@ -29,7 +35,13 @@ export const INITIAL_ACCOUNTS: CloudAccount[] = [
     monthlySpend: 24320,
     dailyBurn: 810,
     environment: 'Production',
-    status: 'active'
+    status: 'active',
+    connectionType: 'service_principal',
+    isLiveConnected: true,
+    lastSyncTimestamp: '4 mins ago',
+    syncStatus: 'live',
+    region: 'westeurope',
+    credentialsMasked: 'sp-maniq-sweep-reader (Tenant: 91fa...01b)'
   },
   {
     id: 'gcp-lake',
@@ -39,7 +51,13 @@ export const INITIAL_ACCOUNTS: CloudAccount[] = [
     monthlySpend: 15840,
     dailyBurn: 528,
     environment: 'Data Lake',
-    status: 'warning'
+    status: 'warning',
+    connectionType: 'service_account',
+    isLiveConnected: true,
+    lastSyncTimestamp: 'Just now',
+    syncStatus: 'live',
+    region: 'us-central1',
+    credentialsMasked: 'finops-ingest@prj-analytics-lake-v2.iam.gserviceaccount.com'
   },
   {
     id: 'aws-staging',
@@ -49,7 +67,13 @@ export const INITIAL_ACCOUNTS: CloudAccount[] = [
     monthlySpend: 8120,
     dailyBurn: 270,
     environment: 'Staging',
-    status: 'warning'
+    status: 'warning',
+    connectionType: 'iam_role',
+    isLiveConnected: true,
+    lastSyncTimestamp: '6 mins ago',
+    syncStatus: 'live',
+    region: 'us-west-2',
+    credentialsMasked: 'arn:aws:iam::903244121082:role/FinOpsStagingScanner'
   }
 ];
 
@@ -636,9 +660,9 @@ export const HISTORICAL_SPEND: SpendPoint[] = [
   { date: 'Oct 04', aws: 1520, azure: 810, gcp: 530, total: 2860, budget: 3200 },
   { date: 'Oct 07', aws: 1610, azure: 830, gcp: 590, total: 3030, budget: 3200 },
   { date: 'Oct 10', aws: 1590, azure: 840, gcp: 580, total: 3010, budget: 3200 },
-  { date: 'Oct 13', aws: 1720, azure: 890, gcp: 640, total: 3250, budget: 3200 }, // Anomaly spike
+  { date: 'Oct 13', aws: 1720, azure: 890, gcp: 640, total: 3250, budget: 3200 },
   { date: 'Oct 16', aws: 1680, azure: 860, gcp: 610, total: 3150, budget: 3200 },
-  { date: 'Oct 19', aws: 1560, azure: 820, gcp: 560, total: 2940, budget: 3200 }, // Savings started
+  { date: 'Oct 19', aws: 1560, azure: 820, gcp: 560, total: 2940, budget: 3200 },
   { date: 'Oct 22', aws: 1490, azure: 780, gcp: 520, total: 2790, budget: 3200 },
   { date: 'Oct 25', aws: 1420, azure: 750, gcp: 490, total: 2660, budget: 3200 }
 ];

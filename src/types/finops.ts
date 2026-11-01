@@ -13,6 +13,12 @@ export interface CloudAccount {
   dailyBurn: number;
   environment: 'Production' | 'Staging' | 'Data Lake' | 'Sandbox';
   status: 'active' | 'warning';
+  connectionType?: 'iam_role' | 'service_principal' | 'service_account';
+  isLiveConnected?: boolean;
+  lastSyncTimestamp?: string;
+  syncStatus?: 'live' | 'syncing' | 'error';
+  region?: string;
+  credentialsMasked?: string;
 }
 
 export interface OptimizationOpportunity {
@@ -65,6 +71,8 @@ export interface Engineer {
   badges: string[]; // Badge IDs
   recentAchievement?: string;
   isCurrentUser?: boolean;
+  website?: string;
+  isAuthor?: boolean;
 }
 
 export interface TeamStanding {

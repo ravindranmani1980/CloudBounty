@@ -1,4 +1,4 @@
-// Web Audio API Synthesizer for gamified FinOps rewards and interactions
+// Web Audio API Synthesizer for gamified FinOps rewards and interactive arcade game
 
 let audioCtx: AudioContext | null = null;
 let soundEnabled = true;
@@ -27,7 +27,7 @@ export const soundManager = {
     soundEnabled = enabled;
   },
 
-  // Pleasant chime on minor interaction
+  // Minor UI click
   playClick: () => {
     if (!soundEnabled) return;
     try {
@@ -37,17 +37,116 @@ export const soundManager = {
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(600, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.05);
+      osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.04);
 
       gain.gain.setValueAtTime(0.04, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.05);
+      osc.stop(ctx.currentTime + 0.04);
     } catch {
-      // Audio context might fail on restricted environments
+      // ignore
+    }
+  },
+
+  // Arcade: Zap / Terminate waste node
+  playZap: () => {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.12);
+
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    } catch {
+      // ignore
+    }
+  },
+
+  // Arcade: Rightsize / Optimize node
+  playRightsize: () => {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.1);
+
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+    } catch {
+      // ignore
+    }
+  },
+
+  // Arcade: Combo multiplier sound
+  playCombo: () => {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const notes = [587.33, 739.99, 880, 1174.66]; // D5, F#5, A5, D6
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.05);
+
+        const start = ctx.currentTime + idx * 0.05;
+        gain.gain.setValueAtTime(0.05, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.12);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.12);
+      });
+    } catch {
+      // ignore
+    }
+  },
+
+  // Boss hit impact
+  playBossHit: () => {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(140, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.2);
+
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    } catch {
+      // ignore
     }
   },
 
@@ -80,7 +179,7 @@ export const soundManager = {
         osc.stop(startTime + duration);
       });
     } catch {
-      // ignore audio failure
+      // ignore
     }
   },
 

@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import {
   Sliders,
-  DollarSign,
-  TrendingDown,
   Sparkles,
   Leaf,
   Plus,
-  CheckCircle2,
-  HelpCircle,
-  ArrowRight
+  CheckCircle2
 } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 
@@ -26,24 +22,15 @@ interface SavingsSimulatorProps {
 export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
   onDeploySimulatedQuest
 }) => {
-  // Lever States
   const [offHoursPercent, setOffHoursPercent] = useState(65);
   const [spotAdoptionPercent, setSpotAdoptionPercent] = useState(45);
   const [storageTieringPercent, setStorageTieringPercent] = useState(70);
   const [savingsPlansCoverage, setSavingsPlansCoverage] = useState(80);
   const [deployed, setDeployed] = useState(false);
 
-  // Real-time calculation math
-  // Base non-prod compute: ~$14,000/mo. If 65% shut down during nights/weekends -> saves ~$4,550
   const offHoursSavings = Math.round((offHoursPercent / 100) * 7000);
-
-  // Base batch & async worker compute: ~$16,000/mo. Spot discount ~60% -> saves ~$5,760
   const spotSavings = Math.round((spotAdoptionPercent / 100) * 9600);
-
-  // Base storage footprint: 240TB across AWS S3, Azure Blob, GCS (~$5,000/mo) -> saves ~$2,250
   const storageSavings = Math.round((storageTieringPercent / 100) * 3200);
-
-  // Base steady-state on-demand compute: ~$25,000/mo. Savings plans discount ~35% -> saves ~$6,300
   const savingsPlansSavings = Math.round(((savingsPlansCoverage - 30) / 70) * 6300);
 
   const totalSimulatedMonthlySavings =
@@ -67,33 +54,40 @@ export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Banner */}
-      <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-2">
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span>What-If Modeling Sandbox</span>
-          <span aria-hidden="true">·</span>
-          <span>Strategic FinOps Projections</span>
+      <section className="xh-panel space-y-2">
+        <div className="xh-kicker">
+          <span className="k">Maniq | Sweep · What-If Modeling Sandbox</span>
+          <span className="tag">Strategic FinOps Projections</span>
         </div>
-        <h2 className="text-xl font-bold text-white tracking-tight">
-          Multi-Cloud Savings & Optimization Simulator
-        </h2>
-        <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
-          Adjust infrastructure policy levers across AWS, Azure, and Google Cloud to simulate potential monthly cost reductions, carbon offset, and unlocked engineering bounty points.
-        </p>
-      </div>
+        <div className="pt-2">
+          <h2 className="text-xl font-bold text-[#EEF3F1] tracking-tight">
+            Multi-Cloud Savings &amp; Optimization Simulator
+          </h2>
+          <p className="text-xs text-[#A9B7BF] max-w-2xl leading-relaxed mt-1">
+            Adjust infrastructure policy levers across AWS, Azure, and Google Cloud to simulate potential monthly cost reductions, carbon offset, and unlocked engineering bounty points.
+          </p>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Interactive Policy Levers */}
-        <div className="lg:col-span-2 p-6 bg-slate-900 border border-slate-800 rounded-xl space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <Sliders className="w-4 h-4 text-emerald-400" />
-              <h3 className="text-sm font-bold text-white tracking-tight">
-                Policy Parameters & Optimization Levers
-              </h3>
+        <section className="lg:col-span-2 p-6 bg-white border border-slate-200 rounded-xl space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 text-[#5FD3BF] flex items-center justify-center">
+                <Sliders className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="rm-kicker">01 / Policy Parameters</span>
+                <h3 className="text-base font-semibold text-slate-900">
+                  Interactive Cloud Governance Levers
+                </h3>
+              </div>
             </div>
             <button
+              type="button"
               onClick={() => {
                 setOffHoursPercent(65);
                 setSpotAdoptionPercent(45);
@@ -101,27 +95,27 @@ export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
                 setSavingsPlansCoverage(80);
                 soundManager.playClick();
               }}
-              className="text-xs text-slate-400 hover:text-slate-200 transition-colors"
+              className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
             >
               Reset to Defaults
             </button>
           </div>
 
           <div className="space-y-6">
-            {/* Lever 1: Off-Hours Dev Shutdown */}
-            <div className="space-y-2.5">
+            {/* Lever 1 */}
+            <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-slate-200">
-                    Non-Prod & Staging Auto-Shutdown (Nights & Weekends)
+                  <span className="font-semibold text-slate-900">
+                    Non-Prod &amp; Staging Auto-Shutdown (Nights &amp; Weekends)
                   </span>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500">
                     Automatically power off test/dev EC2, Azure VMs, and GKE nodes during 68 non-working hours/week.
                   </p>
                 </div>
                 <div className="text-right font-mono tabular-nums shrink-0 ml-4">
-                  <span className="text-sm font-bold text-emerald-400">{offHoursPercent}%</span>
-                  <div className="text-[11px] text-slate-400">+${offHoursSavings.toLocaleString()}/mo</div>
+                  <span className="text-sm font-bold text-slate-900">{offHoursPercent}%</span>
+                  <div className="text-[11px] text-emerald-700 font-semibold">+${offHoursSavings.toLocaleString()}/mo</div>
                 </div>
               </div>
               <input
@@ -131,24 +125,24 @@ export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
                 step="5"
                 value={offHoursPercent}
                 onChange={(e) => setOffHoursPercent(Number(e.target.value))}
-                className="w-full accent-emerald-400 cursor-pointer"
+                className="w-full accent-[#0E2238] cursor-pointer"
               />
             </div>
 
-            {/* Lever 2: Spot & Preemptible Adoption */}
-            <div className="space-y-2.5">
+            {/* Lever 2 */}
+            <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-slate-200">
-                    Spot & Preemptible Instance Adoption on Batch/Async Nodes
+                  <span className="font-semibold text-slate-900">
+                    Spot &amp; Preemptible Instance Adoption on Batch/Async Nodes
                   </span>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500">
                     Shift stateless background queue workers and ETL pipelines to excess cloud capacity.
                   </p>
                 </div>
                 <div className="text-right font-mono tabular-nums shrink-0 ml-4">
-                  <span className="text-sm font-bold text-emerald-400">{spotAdoptionPercent}%</span>
-                  <div className="text-[11px] text-slate-400">+${spotSavings.toLocaleString()}/mo</div>
+                  <span className="text-sm font-bold text-slate-900">{spotAdoptionPercent}%</span>
+                  <div className="text-[11px] text-emerald-700 font-semibold">+${spotSavings.toLocaleString()}/mo</div>
                 </div>
               </div>
               <input
@@ -158,24 +152,24 @@ export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
                 step="5"
                 value={spotAdoptionPercent}
                 onChange={(e) => setSpotAdoptionPercent(Number(e.target.value))}
-                className="w-full accent-emerald-400 cursor-pointer"
+                className="w-full accent-[#0E2238] cursor-pointer"
               />
             </div>
 
-            {/* Lever 3: Storage Intelligent Tiering */}
-            <div className="space-y-2.5">
+            {/* Lever 3 */}
+            <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-slate-200">
-                    Storage Intelligent Tiering & Cold Archival Policies
+                  <span className="font-semibold text-slate-900">
+                    Storage Intelligent Tiering &amp; Cold Archival Policies
                   </span>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500">
                     Automate transitions for AWS S3 Glacier Instant, Azure Cool Blob, and GCP Nearline.
                   </p>
                 </div>
                 <div className="text-right font-mono tabular-nums shrink-0 ml-4">
-                  <span className="text-sm font-bold text-emerald-400">{storageTieringPercent}%</span>
-                  <div className="text-[11px] text-slate-400">+${storageSavings.toLocaleString()}/mo</div>
+                  <span className="text-sm font-bold text-slate-900">{storageTieringPercent}%</span>
+                  <div className="text-[11px] text-emerald-700 font-semibold">+${storageSavings.toLocaleString()}/mo</div>
                 </div>
               </div>
               <input
@@ -185,24 +179,24 @@ export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
                 step="5"
                 value={storageTieringPercent}
                 onChange={(e) => setStorageTieringPercent(Number(e.target.value))}
-                className="w-full accent-emerald-400 cursor-pointer"
+                className="w-full accent-[#0E2238] cursor-pointer"
               />
             </div>
 
-            {/* Lever 4: Savings Plans & RIs Coverage */}
-            <div className="space-y-2.5">
+            {/* Lever 4 */}
+            <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-semibold text-slate-200">
-                    Compute Savings Plans & Reserved Commitments Coverage
+                  <span className="font-semibold text-slate-900">
+                    Compute Savings Plans &amp; Reserved Commitments Coverage
                   </span>
-                  <p className="text-[11px] text-slate-400">
-                    Lock in 1-year and 3-year commitments for predictable baseline workloads across AWS & Azure.
+                  <p className="text-[11px] text-slate-500">
+                    Lock in 1-year and 3-year commitments for predictable baseline workloads across AWS &amp; Azure.
                   </p>
                 </div>
                 <div className="text-right font-mono tabular-nums shrink-0 ml-4">
-                  <span className="text-sm font-bold text-emerald-400">{savingsPlansCoverage}%</span>
-                  <div className="text-[11px] text-slate-400">+${savingsPlansSavings.toLocaleString()}/mo</div>
+                  <span className="text-sm font-bold text-slate-900">{savingsPlansCoverage}%</span>
+                  <div className="text-[11px] text-emerald-700 font-semibold">+${savingsPlansSavings.toLocaleString()}/mo</div>
                 </div>
               </div>
               <input
@@ -212,78 +206,77 @@ export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
                 step="5"
                 value={savingsPlansCoverage}
                 onChange={(e) => setSavingsPlansCoverage(Number(e.target.value))}
-                className="w-full accent-emerald-400 cursor-pointer"
+                className="w-full accent-[#0E2238] cursor-pointer"
               />
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Right 1 Col: Projected ROI & Bounty Deployment */}
-        <div className="p-6 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between space-y-6">
+        <section className="p-6 bg-white border border-slate-200 rounded-xl flex flex-col justify-between space-y-6">
           <div className="space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-tight">
-                Simulated Outcome & Impact
+              <span className="rm-kicker">02 / Projected Impact</span>
+              <h3 className="text-base font-semibold text-slate-900">
+                Simulated Outcome &amp; ROI
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Calculated on real multi-cloud telemetry baseline
+              <p className="text-xs text-slate-500 mt-0.5">
+                Calculated on live multi-cloud telemetry baseline
               </p>
             </div>
 
-            {/* Big Projected Savings */}
-            <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-              <div className="text-xs text-slate-400">Potential Monthly Reduction</div>
-              <div className="text-3xl font-extrabold font-mono tabular-nums text-emerald-400">
+            <div className="p-4 bg-[#0D1C2D] text-[#EEF3F1] rounded-xl border border-[#3E6E86]/40 space-y-2">
+              <div className="text-xs text-[#A9B7BF] font-mono">Potential Monthly Reduction</div>
+              <div className="text-3xl font-bold font-mono tabular-nums text-[#5FD3BF]">
                 +${totalSimulatedMonthlySavings.toLocaleString()}
-                <span className="text-xs font-normal text-slate-400 ml-1">/mo</span>
+                <span className="text-xs font-normal text-[#A9B7BF] ml-1">/mo</span>
               </div>
-              <div className="text-xs text-slate-400 pt-1 flex items-center justify-between">
+              <div className="text-xs text-[#A9B7BF] pt-1 border-t border-[#3E6E86]/30 flex items-center justify-between">
                 <span>Annualized ROI:</span>
-                <span className="font-mono text-slate-200 font-semibold">
+                <span className="font-mono text-[#EBC385] font-semibold">
                   ${totalSimulatedAnnualSavings.toLocaleString()}/yr
                 </span>
               </div>
             </div>
 
-            {/* Gaming & Sustainability Perks */}
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2.5 bg-slate-950/60 rounded-lg border border-slate-800">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-2 text-slate-700 font-medium">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
                   <span>Engineer XP Bounty Pool</span>
                 </div>
-                <span className="font-mono font-bold text-amber-400">
+                <span className="font-mono font-bold text-amber-700">
                   +{simulatedXpReward.toLocaleString()} XP
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 bg-slate-950/60 rounded-lg border border-slate-800">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Leaf className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-2 text-slate-700 font-medium">
+                  <Leaf className="w-3.5 h-3.5 text-emerald-700" />
                   <span>Cloud Carbon Abatement</span>
                 </div>
-                <span className="font-mono font-bold text-cyan-400">
+                <span className="font-mono font-bold text-emerald-800">
                   -{simulatedCarbonOffset.toLocaleString()} kg CO2e
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Action Button: Deploy Sprint Quest */}
           <div className="space-y-2">
             <button
+              type="button"
               onClick={handleDeployQuest}
               disabled={deployed}
-              className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition-colors rounded-lg shadow-sm shadow-emerald-500/20 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 transition-colors rounded-lg cursor-pointer"
             >
               {deployed ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-slate-950" />
+                  <CheckCircle2 className="w-4 h-4 text-[#5FD3BF]" />
                   <span>Sprint Quest Added to Board!</span>
                 </>
               ) : (
                 <>
-                  <Plus className="w-4 h-4 text-slate-950" />
+                  <Plus className="w-4 h-4 text-[#5FD3BF]" />
                   <span>Deploy as Team Sprint Quest</span>
                 </>
               )}
@@ -292,7 +285,7 @@ export const SavingsSimulator: React.FC<SavingsSimulatorProps> = ({
               Converts these simulation parameters into a live claimable optimization task.
             </p>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );
