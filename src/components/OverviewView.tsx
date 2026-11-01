@@ -21,6 +21,7 @@ import {
 import {
   ResponsiveContainer,
   ComposedChart,
+  AreaChart,
   BarChart,
   Line,
   Bar,
@@ -182,6 +183,27 @@ const CARBON_SAVINGS_DATA: CarbonSavingsItem[] = [
   }
 ];
 
+interface SevenDaySpendPoint {
+  day: string;
+  date: string;
+  total: number;
+  aws: number;
+  azure: number;
+  gcp: number;
+  budget: number;
+  change: string;
+}
+
+const SEVEN_DAY_SPEND_TREND: SevenDaySpendPoint[] = [
+  { day: 'Mon', date: 'Oct 26', total: 3190, aws: 1640, azure: 940, gcp: 610, budget: 3200, change: '-1.8%' },
+  { day: 'Tue', date: 'Oct 27', total: 3110, aws: 1590, azure: 920, gcp: 600, budget: 3200, change: '-2.5%' },
+  { day: 'Wed', date: 'Oct 28', total: 3260, aws: 1690, azure: 950, gcp: 620, budget: 3200, change: '+4.8%' },
+  { day: 'Thu', date: 'Oct 29', total: 2980, aws: 1520, azure: 890, gcp: 570, budget: 3200, change: '-8.6%' },
+  { day: 'Fri', date: 'Oct 30', total: 2890, aws: 1470, azure: 870, gcp: 550, budget: 3200, change: '-3.0%' },
+  { day: 'Sat', date: 'Oct 31', total: 2740, aws: 1390, azure: 830, gcp: 520, budget: 3200, change: '-5.2%' },
+  { day: 'Sun', date: 'Nov 01', total: 2660, aws: 1350, azure: 810, gcp: 500, budget: 3200, change: '-2.9%' }
+];
+
 export const OverviewView: React.FC<OverviewViewProps> = ({
   accounts,
   totalMonthlySpend,
@@ -339,6 +361,47 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     return null;
   };
 
+  const sevenDayTotal = SEVEN_DAY_SPEND_TREND.reduce((sum, d) => sum + d.total, 0);
+  const sevenDayAvg = Math.round(sevenDayTotal / SEVEN_DAY_SPEND_TREND.length);
+  const sevenDayDelta = Math.round(
+    ((SEVEN_DAY_SPEND_TREND[SEVEN_DAY_SPEND_TREND.length - 1].total - SEVEN_DAY_SPEND_TREND[0].total) /
+      SEVEN_DAY_SPEND_TREND[0].total) *
+      1000
+  ) / 10;
+
+  const CustomSevenDayTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload as SevenDaySpendPoint;
+      return (
+        <div className="p-3 bg-[#081420] text-[#EEF3F1] border border-[#3E6E86]/60 rounded-xl shadow-xl text-xs space-y-1.5 min-w-[185px] font-mono tabular-nums">
+          <div className="flex items-center justify-between font-sans font-semibold text-white border-b border-[#3E6E86]/40 pb-1">
+            <span>{data.day}, {data.date}</span>
+            <span className="text-[10px] font-mono text-[#5FD3BF]">{data.change} DoD</span>
+          </div>
+          <div className="flex justify-between items-center text-[#5FD3BF] font-bold">
+            <span>Total Spend:</span>
+            <span>${data.total.toLocaleString()}</span>
+          </div>
+          <div className="pt-1 border-t border-[#3E6E86]/40 text-[11px] space-y-0.5 text-[#A9B7BF]">
+            <div className="flex justify-between">
+              <span className="text-[#EBC385]">AWS:</span>
+              <span className="text-[#EEF3F1]">${data.aws.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#5FD3BF]">Azure:</span>
+              <span className="text-[#EEF3F1]">${data.azure.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-rose-300">GCP:</span>
+              <span className="text-[#EEF3F1]">${data.gcp.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="space-y-8">
       {/* POSTRIX SIGNATURE DARK COMMAND PANEL (.xh-panel) */}
@@ -357,7 +420,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               <h1 className="text-base font-semibold text-[#EEF3F1] leading-snug m-0 font-sans">
                 Maniq | Sweep — Enterprise Cloud Spend &amp; Bounty Command
                 <span className="block font-mono font-normal text-xs text-[#A9B7BF] mt-0.5">
-                  Author: Mani Ravindran (
+                  Author: Ravindran Mani (
                   <a
                     href="https://ravindran.in"
                     target="_blank"
@@ -473,6 +536,118 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               <span className="text-xs font-normal text-[#A9B7BF] ml-1.5">kg CO2e</span>
             </div>
             <p>Equivalent to 84 mature trees · AWS, Azure &amp; GCP combined</p>
+          </div>
+        </div>
+      </section>
+
+      {/* COMPACT 7-DAY SPEND TREND CARD (RECHARTS) */}
+      <section className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+          {/* Left: Summary & KPI Callouts */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#081420] text-[#5FD3BF] flex items-center justify-center shrink-0">
+                <TrendingDown className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="rm-kicker !mb-0">Short-Window Velocity</span>
+                <h2 className="text-base font-semibold text-slate-900 leading-tight">
+                  Spend Trend (Last 7 Days)
+                </h2>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Total multi-cloud daily expenditure from <span className="font-mono font-medium text-slate-700">Oct 26 – Nov 01</span> following automated EBS and GKE rightsizing sweeps.
+            </p>
+
+            <div className="grid grid-cols-3 gap-2.5 pt-1 font-mono tabular-nums">
+              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                <div className="text-[10px] text-slate-500 font-sans">7-Day Total</div>
+                <div className="text-sm font-bold text-slate-900 mt-0.5">
+                  ${sevenDayTotal.toLocaleString()}
+                </div>
+              </div>
+              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                <div className="text-[10px] text-slate-500 font-sans">Daily Avg</div>
+                <div className="text-sm font-bold text-[#0E2238] mt-0.5">
+                  ${sevenDayAvg.toLocaleString()}/d
+                </div>
+              </div>
+              <div className="p-2.5 bg-emerald-50/70 border border-emerald-200 rounded-lg">
+                <div className="text-[10px] text-emerald-800 font-sans">7-Day Delta</div>
+                <div className="text-sm font-bold text-emerald-700 mt-0.5">
+                  {sevenDayDelta}%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right 2 Cols: Compact Recharts AreaChart */}
+          <div className="lg:col-span-2 bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2 text-xs">
+              <span className="font-semibold text-slate-800">
+                7-Day Total Cloud Expenditure ($/day)
+              </span>
+              <div className="flex items-center gap-4 text-[11px] font-mono text-slate-600">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-2.5 h-2 rounded-xs bg-[#2BB5A0] inline-block" /> Daily Total Spend
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-2.5 h-0.5 bg-[#D79A45] inline-block" /> $3,200 Daily Ceiling
+                </span>
+              </div>
+            </div>
+
+            <div className="w-full h-40">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={SEVEN_DAY_SPEND_TREND}
+                  margin={{ top: 8, right: 12, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="sevenDaySpendFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2BB5A0" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#0E2238" stopOpacity={0.03} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+                  <XAxis
+                    dataKey="date"
+                    stroke="#475569"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={{ stroke: '#CBD5E1' }}
+                  />
+                  <YAxis
+                    domain={[2200, 3400]}
+                    stroke="#475569"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={{ stroke: '#CBD5E1' }}
+                    tickFormatter={(val) => `$${val}`}
+                    width={48}
+                  />
+                  <Tooltip content={<CustomSevenDayTooltip />} />
+                  <ReferenceLine
+                    y={3200}
+                    stroke="#D79A45"
+                    strokeDasharray="4 4"
+                    strokeWidth={1.5}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="total"
+                    name="Total Cloud Spend"
+                    stroke="#0E2238"
+                    strokeWidth={2.5}
+                    fill="url(#sevenDaySpendFill)"
+                    dot={{ r: 3.5, fill: '#2BB5A0', stroke: '#0E2238', strokeWidth: 1.5 }}
+                    activeDot={{ r: 5, fill: '#D79A45', stroke: '#081420', strokeWidth: 2 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </section>

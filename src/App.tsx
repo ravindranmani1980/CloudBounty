@@ -73,7 +73,7 @@ export default function App() {
       if (saved) {
         const parsed: Engineer[] = JSON.parse(saved);
         return parsed.map((e) => {
-          if (e.name.includes('Mani Ravindran') || e.id === 'eng-mani') {
+          if (e.name.includes('Mani Ravindran') || e.name.includes('Ravindran Mani') || e.id === 'eng-mani') {
             return {
               ...e,
               id: 'eng-alex',
@@ -114,7 +114,13 @@ export default function App() {
   const [badges, setBadges] = useState<Badge[]>(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_badges`);
-      return saved ? JSON.parse(saved) : INITIAL_BADGES;
+      if (saved) {
+        const parsed: Badge[] = JSON.parse(saved);
+        const existingIds = new Set(parsed.map((b) => b.id));
+        const missing = INITIAL_BADGES.filter((b) => !existingIds.has(b.id));
+        return [...parsed, ...missing];
+      }
+      return INITIAL_BADGES;
     } catch {
       return INITIAL_BADGES;
     }
@@ -128,7 +134,18 @@ export default function App() {
   const [isNewBountyModalOpen, setIsNewBountyModalOpen] = useState(false);
   const [isConnectCloudModalOpen, setIsConnectCloudModalOpen] = useState(false);
   const [isLaunchGameModalOpen, setIsLaunchGameModalOpen] = useState(false);
-  const [unlockedBadgeForModal, setUnlockedBadgeForModal] = useState<Badge | null>(null);
+  const [unlockedBadgeQueue, setUnlockedBadgeQueue] = useState<Badge[]>([]);
+  const unlockedBadgeForModal = unlockedBadgeQueue[0] || null;
+
+  const enqueueUnlockedBadges = (newlyUnlocked: Badge[]) => {
+    if (newlyUnlocked.length === 0) return;
+    soundManager.playMilestoneUnlocked();
+    setUnlockedBadgeQueue((prev) => {
+      const existingIds = new Set(prev.map((b) => b.id));
+      const filtered = newlyUnlocked.filter((b) => !existingIds.has(b.id));
+      return [...prev, ...filtered];
+    });
+  };
 
   // Sync to local storage for guest persistence
   useEffect(() => {
@@ -325,13 +342,49 @@ export default function App() {
       }
     });
 
+    const newlyUnlockedBadges: Badge[] = [];
+    const unlockedIdsToAdd: string[] = [];
+
+    // Check Cloud Health badge: unlocks when user resolves > 10 optimization opportunities
+    const cloudHealthBadge = badges.find((b) => b.id === 'badge-cloud-health');
+    if (cloudHealthBadge && !cloudHealthBadge.unlocked && updatedBountiesCount > 10) {
+      const updatedCloudHealth: Badge = {
+        ...cloudHealthBadge,
+        unlocked: true,
+        unlockedAt: 'Just now'
+      };
+      newlyUnlockedBadges.push(updatedCloudHealth);
+      unlockedIdsToAdd.push('badge-cloud-health');
+    }
+
+    // Check Network Ninja badge
     if (claimedOpp.service.includes('VPC') || claimedOpp.service.includes('NAT')) {
       const netBadge = badges.find((b) => b.id === 'badge-nat-hunter');
       if (netBadge && !netBadge.unlocked) {
-        netBadge.unlocked = true;
-        netBadge.unlockedAt = 'Just now';
-        setUnlockedBadgeForModal(netBadge);
+        const updatedNetBadge: Badge = {
+          ...netBadge,
+          unlocked: true,
+          unlockedAt: 'Just now'
+        };
+        newlyUnlockedBadges.push(updatedNetBadge);
+        unlockedIdsToAdd.push('badge-nat-hunter');
       }
+    }
+
+    if (newlyUnlockedBadges.length > 0) {
+      const unlockedMap = new Map(newlyUnlockedBadges.map((b) => [b.id, b]));
+      setBadges((prev) => prev.map((b) => unlockedMap.get(b.id) || b));
+      setEngineers((prev) =>
+        prev.map((eng) =>
+          eng.id === currentUser.id
+            ? {
+                ...eng,
+                badges: Array.from(new Set([...eng.badges, ...unlockedIdsToAdd]))
+              }
+            : eng
+        )
+      );
+      enqueueUnlockedBadges(newlyUnlockedBadges);
     }
   };
 
@@ -402,11 +455,43 @@ export default function App() {
       }
     });
 
+    const newlyUnlockedRaidBadges: Badge[] = [];
+    const raidBadgeIdsToAdd: string[] = [];
+
+    const cloudHealthBadge = badges.find((b) => b.id === 'badge-cloud-health');
+    if (cloudHealthBadge && !cloudHealthBadge.unlocked && updatedBountiesCount > 10) {
+      newlyUnlockedRaidBadges.push({
+        ...cloudHealthBadge,
+        unlocked: true,
+        unlockedAt: 'Just now'
+      });
+      raidBadgeIdsToAdd.push('badge-cloud-health');
+    }
+
     const zombieBadge = badges.find((b) => b.id === 'badge-zombie-slayer');
     if (zombieBadge && !zombieBadge.unlocked) {
-      zombieBadge.unlocked = true;
-      zombieBadge.unlockedAt = 'Just now';
-      setUnlockedBadgeForModal(zombieBadge);
+      newlyUnlockedRaidBadges.push({
+        ...zombieBadge,
+        unlocked: true,
+        unlockedAt: 'Just now'
+      });
+      raidBadgeIdsToAdd.push('badge-zombie-slayer');
+    }
+
+    if (newlyUnlockedRaidBadges.length > 0) {
+      const unlockedMap = new Map(newlyUnlockedRaidBadges.map((b) => [b.id, b]));
+      setBadges((prev) => prev.map((b) => unlockedMap.get(b.id) || b));
+      setEngineers((prev) =>
+        prev.map((eng) =>
+          eng.id === currentUser.id
+            ? {
+                ...eng,
+                badges: Array.from(new Set([...eng.badges, ...raidBadgeIdsToAdd]))
+              }
+            : eng
+        )
+      );
+      enqueueUnlockedBadges(newlyUnlockedRaidBadges);
     }
 
     try {
@@ -590,7 +675,7 @@ export default function App() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <span>
-              Author: <strong className="font-medium text-[#F3F5F1]">Mani Ravindran</strong>
+              Author: <strong className="font-medium text-[#F3F5F1]">Ravindran Mani</strong>
             </span>
             <span className="text-[#3E6E86]" aria-hidden="true">
               ·
@@ -639,7 +724,9 @@ export default function App() {
 
       <BadgeUnlockedModal
         badge={unlockedBadgeForModal}
-        onClose={() => setUnlockedBadgeForModal(null)}
+        onClose={() => setUnlockedBadgeQueue((prev) => prev.slice(1))}
+        resolvedCount={currentUser.bountiesClaimed}
+        engineerName={currentUser.name}
       />
 
       <LaunchGameModal

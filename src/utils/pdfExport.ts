@@ -73,7 +73,7 @@ export function generateExecutivePdf(data: PdfReportData): void {
   // Author Credit in banner
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(95, 211, 191);
-  doc.text('Author: Mani Ravindran  |  https://ravindran.in', margin + 7, y + 29);
+  doc.text('Author: Ravindran Mani  |  https://ravindran.in', margin + 7, y + 29);
 
   y += 40;
 
@@ -380,7 +380,7 @@ export function generateExecutivePdf(data: PdfReportData): void {
 
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(13, 148, 136);
-  doc.text('Created by Mani Ravindran (https://ravindran.in)', margin + contentWidth - 68, footerY + 2);
+  doc.text('Created by Ravindran Mani (https://ravindran.in)', margin + contentWidth - 68, footerY + 2);
 
   // Trigger Save / Download
   const filename = `Maniq-Sweep-FinOps-Executive-Report-${new Date().toISOString().slice(0, 10)}.pdf`;

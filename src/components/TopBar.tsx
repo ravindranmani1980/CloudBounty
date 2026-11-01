@@ -168,7 +168,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
             <div className="text-[#C6D1D6]">
               <span className="text-[#A9B7BF]">Author:</span>{' '}
-              <strong className="font-medium text-white">Mani Ravindran</strong>{' '}
+              <strong className="font-medium text-white">Ravindran Mani</strong>{' '}
               <a
                 href="https://ravindran.in"
                 target="_blank"

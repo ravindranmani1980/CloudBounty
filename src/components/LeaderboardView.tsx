@@ -12,7 +12,8 @@ import {
   Users,
   CheckCircle2,
   Lock,
-  Sparkles
+  Sparkles,
+  HeartPulse
 } from 'lucide-react';
 import { Engineer, TeamStanding, Badge } from '../types/finops';
 import { soundManager } from '../utils/audio';
@@ -50,6 +51,8 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         return <Moon className={className} />;
       case 'Network':
         return <Network className={className} />;
+      case 'HeartPulse':
+        return <HeartPulse className={className} />;
       default:
         return <Sparkles className={className} />;
     }

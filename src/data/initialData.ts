@@ -154,6 +154,15 @@ export const INITIAL_BADGES: Badge[] = [
     category: 'efficiency',
     unlocked: false,
     requirement: 'Remediate 3+ networking waste or NAT Gateway anomalies'
+  },
+  {
+    id: 'badge-cloud-health',
+    name: 'Cloud Health',
+    description: 'Maintained peak multi-cloud infrastructure hygiene by resolving more than 10 optimization opportunities.',
+    iconName: 'HeartPulse',
+    category: 'efficiency',
+    unlocked: false,
+    requirement: 'Resolve more than 10 optimization opportunities (> 10 bounties claimed)'
   }
 ];
 

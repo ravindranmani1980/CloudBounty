@@ -54,7 +54,7 @@ export const ExecutiveReportModal: React.FC<ExecutiveReportModalProps> = ({
           anomalies,
           opportunities,
           reportTitle: 'Maniq | Sweep Multi-Cloud Executive FinOps Report',
-          preparedBy: 'Mani Ravindran (ravindran.in)'
+          preparedBy: 'Ravindran Mani (ravindran.in)'
         };
 
         generateExecutivePdf(reportData);
@@ -114,7 +114,7 @@ export const ExecutiveReportModal: React.FC<ExecutiveReportModalProps> = ({
           <div className="flex items-center justify-between p-3 bg-[#F3F5F1] rounded-xl border border-slate-200 text-xs">
             <div className="flex items-center gap-2">
               <span className="text-[#566676] font-mono uppercase text-[11px]">Report Architect:</span>
-              <span className="font-bold text-[#16232F]">Mani Ravindran</span>
+              <span className="font-bold text-[#16232F]">Ravindran Mani</span>
             </div>
             <a
               href="https://ravindran.in"
